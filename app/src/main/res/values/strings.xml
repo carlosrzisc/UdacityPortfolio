@@ -12,4 +12,6 @@
     <string name="title_activity_spotify_streamer">Spotify Streamer</string>
     <string name="search_artist_label">Search artist</string>
     <string name="title_activity_tracks">Top 10 Tracks</string>
+    <string name="artist_notfound">Artist was not found, please try again</string>
+    <string name="tracks_notfound">No tracks were found for selected artist, please go back and select another artist</string>
 </resources>

@@ -108,7 +108,11 @@ public class TracksActivityFragment extends Fragment {
         @Override
         protected void onPostExecute(List<USpotifyObject> result){
             mCustomAdapter.clear();
-            mCustomAdapter.addAll(result);
+            if (!result.isEmpty()) {
+                mCustomAdapter.addAll(result);
+            } else {
+                Toast.makeText(getActivity(), R.string.tracks_notfound, Toast.LENGTH_LONG).show();
+            }
         }
     }
 }

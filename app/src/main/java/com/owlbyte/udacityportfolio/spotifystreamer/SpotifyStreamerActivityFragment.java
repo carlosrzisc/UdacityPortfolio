@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.owlbyte.udacityportfolio.R;
 
@@ -105,7 +106,11 @@ public class SpotifyStreamerActivityFragment extends Fragment implements View.On
         @Override
         protected void onPostExecute(List<USpotifyObject> result){
             mCustomAdapter.clear();
-            mCustomAdapter.addAll(result);
+            if (!result.isEmpty()) {
+                mCustomAdapter.addAll(result);
+            } else {
+                Toast.makeText(getActivity(), R.string.artist_notfound, Toast.LENGTH_LONG).show();
+            }
         }
     }
 }
