@@ -9,4 +9,7 @@
     <string name="btn_builditbigger">BUILD IT BIGGER</string>
     <string name="btn_xyzreader">XYZ READER</string>
     <string name="btn_capstone">CAPSTONE: MY OWN APP</string>
+    <string name="title_activity_spotify_streamer">Spotify Streamer</string>
+    <string name="search_artist_label">Search artist</string>
+    <string name="title_activity_tracks">Top 10 Tracks</string>
 </resources>
