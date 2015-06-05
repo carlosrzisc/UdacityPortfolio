@@ -23,6 +23,9 @@ import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
 import kaaes.spotify.webapi.android.models.Artist;
 import kaaes.spotify.webapi.android.models.ArtistsPager;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -106,29 +109,41 @@ public class SpotifyStreamerActivityFragment extends Fragment implements View.On
             if (params.length == 0) {
                 return null;
             }
+            List<USpotifyObject> artistList = null;
             SpotifyApi api = new SpotifyApi();
             SpotifyService spotify = api.getService();
-            ArtistsPager results = spotify.searchArtists(params[0]);
-            List<USpotifyObject> artistList = new ArrayList<>();
-            for (Artist artist : results.artists.items) {
-                String smallImage="";
-                if (artist.images.size() > 0) {
-                    // Getting image with lowest resolution just to keep it lightweight and faster
-                    smallImage = artist.images.get(artist.images.size()-1).url;
+            ArtistsPager results = null;
+            try {
+                results = spotify.searchArtists(params[0]);
+            } catch(Exception e) {
+                Log.d(LOG_TAG, "Error fetching artists");
+            }
+            if (results != null) {
+                artistList = new ArrayList<>();
+                for (Artist artist : results.artists.items) {
+                    String smallImage = "";
+                    if (artist.images.size() > 0) {
+                        // Getting image with lowest resolution just to keep it lightweight and faster
+                        smallImage = artist.images.get(artist.images.size() - 1).url;
+                    }
+                    artistList.add(new USpotifyObject(
+                            artist.id,
+                            artist.name,
+                            smallImage
+                    ));
                 }
-                artistList.add(new USpotifyObject(
-                        artist.id,
-                        artist.name,
-                        smallImage
-                ));
             }
             return artistList;
         }
 
         @Override
         protected void onPostExecute(List<USpotifyObject> result){
-            listResult = result;
-            fillSpotifyObjList();
+            if (result != null) {
+                listResult = result;
+                fillSpotifyObjList();
+            } else {
+                Toast.makeText(getActivity(), getString(R.string.no_connecion), Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -138,7 +153,7 @@ public class SpotifyStreamerActivityFragment extends Fragment implements View.On
             if (!listResult.isEmpty()) {
                 mCustomAdapter.addAll(listResult);
             } else {
-                Toast.makeText(getActivity(), R.string.artist_notfound, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), getString(R.string.artist_notfound), Toast.LENGTH_SHORT).show();
             }
         }
     }

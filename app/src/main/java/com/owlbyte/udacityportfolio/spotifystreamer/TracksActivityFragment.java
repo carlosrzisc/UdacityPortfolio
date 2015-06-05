@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +30,7 @@ import kaaes.spotify.webapi.android.models.Tracks;
  */
 public class TracksActivityFragment extends Fragment {
 
+    private static final String LOG_TAG = TracksActivityFragment.class.getName();
     private CustomListAdapter mCustomAdapter;
 
     private List<USpotifyObject> listResult;
@@ -97,40 +99,53 @@ public class TracksActivityFragment extends Fragment {
             if (params.length == 0) {
                 return null;
             }
+            List<USpotifyObject> trackList = null;
             SpotifyApi api = new SpotifyApi();
             SpotifyService spotify = api.getService();
             Map q = new HashMap();
             q.put("country", "US");
-            Tracks result = spotify.getArtistTopTrack(params[0], q);
-            List<USpotifyObject> trackList = new ArrayList<>();
-            for (Track track : result.tracks) {
-                String smallImage="", largeImage = "";
-                if (track.album.images.size() > 0) {
-                    smallImage = track.album.images.get(track.album.images.size()-1).url;
-                    largeImage = smallImage;
-                    for (Image image : track.album.images){
-                        if (image.width == 200) {
-                            smallImage = image.url;
-                        } else if (image.width == 640) {
-                            largeImage = image.url;
+            Tracks result = null;
+            try {
+                result = spotify.getArtistTopTrack(params[0], q);
+            } catch (Exception e) {
+                Log.d(LOG_TAG, "Error fectching tracks");
+            }
+
+            if (trackList != null) {
+                trackList = new ArrayList<>();
+                for (Track track : result.tracks) {
+                    String smallImage = "", largeImage = "";
+                    if (track.album.images.size() > 0) {
+                        smallImage = track.album.images.get(track.album.images.size() - 1).url;
+                        largeImage = smallImage;
+                        for (Image image : track.album.images) {
+                            if (image.width == 200) {
+                                smallImage = image.url;
+                            } else if (image.width == 640) {
+                                largeImage = image.url;
+                            }
                         }
                     }
+                    trackList.add(new USpotifyObject(
+                            track.id,
+                            track.name,
+                            smallImage,
+                            largeImage,
+                            track.album.name
+                    ));
                 }
-                trackList.add(new USpotifyObject(
-                        track.id,
-                        track.name,
-                        smallImage,
-                        largeImage,
-                        track.album.name
-                ));
             }
             return trackList;
         }
 
         @Override
         protected void onPostExecute(List<USpotifyObject> result){
-            listResult = result;
-            fillSpotifyObjList();
+            if (result != null) {
+                listResult = result;
+                fillSpotifyObjList();
+            } else {
+                Toast.makeText(getActivity(), getString(R.string.no_connecion), Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
