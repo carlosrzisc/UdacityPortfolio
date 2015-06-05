@@ -32,17 +32,23 @@ public class SpotifyStreamerActivityFragment extends Fragment implements View.On
     private static final String LOG_TAG = SpotifyStreamerActivityFragment.class.getName();
 
     private CustomListAdapter mCustomAdapter;
+    RecyclerView mRecyclerView;
+    RecyclerView.LayoutManager mLayoutManager;
+    private List<USpotifyObject> listResult;
 
     public SpotifyStreamerActivityFragment() {  }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        RecyclerView mRecyclerView;
-        RecyclerView.LayoutManager mLayoutManager;
 
         View rootView = inflater.inflate(R.layout.fragment_spotify_streamer, container, false);
         rootView.findViewById(R.id.txt_search_artist).setOnKeyListener(this);
+
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.artist_list);
+        mLayoutManager = new LinearLayoutManager(getActivity());
+        ((LinearLayoutManager)mLayoutManager).setOrientation(LinearLayoutManager.VERTICAL);
+        mRecyclerView.setLayoutManager(mLayoutManager);
 
         mCustomAdapter = new CustomListAdapter(new ArrayList<USpotifyObject>());
         mCustomAdapter.SetOnItemClickListener(new CustomListAdapter.OnItemClickListener() {
@@ -54,13 +60,29 @@ public class SpotifyStreamerActivityFragment extends Fragment implements View.On
                 startActivity(intent);
             }
         });
-        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.artist_list);
-        mLayoutManager = new LinearLayoutManager(getActivity());
-        ((LinearLayoutManager)mLayoutManager).setOrientation(LinearLayoutManager.VERTICAL);
-        mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mCustomAdapter);
 
         return rootView;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if(savedInstanceState != null && savedInstanceState.containsKey("artistsKey")) {
+            listResult = savedInstanceState.getParcelableArrayList("artistsKey");
+        }
+    }
+
+    @Override
+    public void onStart(){
+        super.onStart();
+        fillSpotifyObjList();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList("artistsKey", (ArrayList)listResult);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -105,11 +127,18 @@ public class SpotifyStreamerActivityFragment extends Fragment implements View.On
 
         @Override
         protected void onPostExecute(List<USpotifyObject> result){
+            listResult = result;
+            fillSpotifyObjList();
+        }
+    }
+
+    private void fillSpotifyObjList() {
+        if (listResult != null) {
             mCustomAdapter.clear();
-            if (!result.isEmpty()) {
-                mCustomAdapter.addAll(result);
+            if (!listResult.isEmpty()) {
+                mCustomAdapter.addAll(listResult);
             } else {
-                Toast.makeText(getActivity(), R.string.artist_notfound, Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), R.string.artist_notfound, Toast.LENGTH_SHORT).show();
             }
         }
     }

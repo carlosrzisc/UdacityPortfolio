@@ -1,10 +1,13 @@
 package com.owlbyte.udacityportfolio.spotifystreamer;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Object to be used as Artist as well as Track
  * Created by carlos on 6/2/15.
  */
-public class USpotifyObject {
+public class USpotifyObject implements Parcelable{
     private String id;
     private String name;
     private String smallImage;
@@ -25,6 +28,14 @@ public class USpotifyObject {
         this.smallImage = smallImage;
         this.largeImage = largeImage;
         this.album = album;
+    }
+
+    public USpotifyObject(Parcel in) {
+        this.id = in.readString();
+        this.name = in.readString();
+        this.smallImage = in.readString();
+        this.largeImage = in.readString();
+        this.album = in.readString();
     }
 
     public String getName() {
@@ -66,4 +77,28 @@ public class USpotifyObject {
     public void setLargeImage(String largeImage) {
         this.largeImage = largeImage;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(id);
+        parcel.writeString(name);
+        parcel.writeString(smallImage);
+        parcel.writeString(largeImage);
+        parcel.writeString(album);
+    }
+
+    public static final Parcelable.Creator<USpotifyObject> CREATOR = new Parcelable.Creator<USpotifyObject>() {
+        public USpotifyObject createFromParcel(Parcel in) {
+            return new USpotifyObject(in);
+        }
+
+        public USpotifyObject[] newArray(int size) {
+            return new USpotifyObject[size];
+        }
+    };
 }
