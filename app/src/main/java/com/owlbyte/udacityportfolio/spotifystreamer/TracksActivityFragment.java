@@ -31,6 +31,8 @@ public class TracksActivityFragment extends Fragment {
 
     private CustomListAdapter mCustomAdapter;
 
+    private List<USpotifyObject> listResult;
+
     public TracksActivityFragment() {
     }
 
@@ -66,6 +68,26 @@ public class TracksActivityFragment extends Fragment {
             new FetchTracksTask().execute(mArtist);
         }
         return rootView;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if(savedInstanceState != null && savedInstanceState.containsKey("artistsKey")) {
+            listResult = savedInstanceState.getParcelableArrayList("artistsKey");
+        }
+    }
+
+    @Override
+    public void onStart(){
+        super.onStart();
+        fillSpotifyObjList();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList("artistsKey", (ArrayList)listResult);
+        super.onSaveInstanceState(outState);
     }
 
     public class FetchTracksTask extends AsyncTask<String, Void, List<USpotifyObject>> {
@@ -107,11 +129,18 @@ public class TracksActivityFragment extends Fragment {
 
         @Override
         protected void onPostExecute(List<USpotifyObject> result){
+            listResult = result;
+            fillSpotifyObjList();
+        }
+    }
+
+    private void fillSpotifyObjList() {
+        if (listResult != null) {
             mCustomAdapter.clear();
-            if (!result.isEmpty()) {
-                mCustomAdapter.addAll(result);
+            if (!listResult.isEmpty()) {
+                mCustomAdapter.addAll(listResult);
             } else {
-                Toast.makeText(getActivity(), R.string.tracks_notfound, Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), R.string.artist_notfound, Toast.LENGTH_SHORT).show();
             }
         }
     }
