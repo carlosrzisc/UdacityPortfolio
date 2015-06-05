@@ -111,7 +111,7 @@ public class TracksActivityFragment extends Fragment {
                 Log.d(LOG_TAG, "Error fectching tracks");
             }
 
-            if (trackList != null) {
+            if (result != null) {
                 trackList = new ArrayList<>();
                 for (Track track : result.tracks) {
                     String smallImage = "", largeImage = "";
