@@ -65,9 +65,11 @@ public class TracksActivityFragment extends Fragment {
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mCustomAdapter);
 
-        if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
-            String mArtist = intent.getStringExtra(Intent.EXTRA_TEXT);
-            new FetchTracksTask().execute(mArtist);
+        if (savedInstanceState == null) {
+            if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
+                String mArtist = intent.getStringExtra(Intent.EXTRA_TEXT);
+                new FetchTracksTask().execute(mArtist);
+            }
         }
         return rootView;
     }
