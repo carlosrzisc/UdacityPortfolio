@@ -6,8 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
 
-import com.owlbyte.udacityportfolio.spotifystreamer.SpotifyStreamerActivity;
-
 
 public class MainActivity extends AppCompatActivity {
 
@@ -18,8 +16,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void launchSpotifyApp(View view) {
-        Intent intent = new Intent(this, SpotifyStreamerActivity.class);
-        startActivity(intent);
+//        Intent intent = new Intent(this, SpotifyStreamerActivity.class);
+//        startActivity(intent);
     }
 
     public void launchScoreApp(View view) {
